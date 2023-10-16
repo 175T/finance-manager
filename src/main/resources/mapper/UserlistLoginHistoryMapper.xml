@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.greatwqs.app.mapper.UserlistLoginHistoryMapper">
+  <resultMap id="BaseResultMap" type="com.github.greatwqs.app.domain.po.UserLoginHistoryPo">
+    <id column="ID" jdbcType="BIGINT" property="id" />
+    <result column="UserId" jdbcType="BIGINT" property="userid" />
+    <result column="LoginIp" jdbcType="VARCHAR" property="loginip" />
+    <result column="LoginToken" jdbcType="VARCHAR" property="logintoken" />
+    <result column="ExpireTime" jdbcType="TIMESTAMP" property="expiretime" />
+    <result column="ISValid" jdbcType="BIT" property="isvalid" />
+    <result column="CreateTime" jdbcType="TIMESTAMP" property="createtime" />
+    <result column="UpdateTime" jdbcType="TIMESTAMP" property="updatetime" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    ID, UserId, LoginIp, LoginToken, ExpireTime, ISValid, CreateTime, UpdateTime
+  </sql>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from userlist_login_history
+    where ID = #{id,jdbcType=BIGINT}
+  </select>
+
+  <select id="selectByLoginToken" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from userlist_login_history
+    where LoginToken = #{loginToken,jdbcType=VARCHAR} and ExpireTime > now() and ISValid = 1
+    limit 1
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from userlist_login_history
+    where ID = #{id,jdbcType=BIGINT}
+  </delete>
+
+  <delete id="deleteByLoginToken">
+    delete from userlist_login_history
+    where LoginToken = #{loginToken,jdbcType=VARCHAR}
+  </delete>
+
+  <insert id="insert" parameterType="com.github.greatwqs.app.domain.po.UserLoginHistoryPo">
+    insert into userlist_login_history (ID, UserId, LoginIp, 
+      LoginToken, ExpireTime,
+      ISValid, CreateTime, UpdateTime)
+    values (#{id,jdbcType=BIGINT}, #{userid,jdbcType=BIGINT}, #{loginip,jdbcType=VARCHAR}, 
+      #{logintoken,jdbcType=VARCHAR}, #{expiretime,jdbcType=TIMESTAMP},
+      #{isvalid,jdbcType=BIT}, #{createtime,jdbcType=TIMESTAMP}, #{updatetime,jdbcType=TIMESTAMP})
+  </insert>
+
+  <insert id="insertSelective" parameterType="com.github.greatwqs.app.domain.po.UserLoginHistoryPo">
+    insert into userlist_login_history
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        ID,
+      </if>
+      <if test="userid != null">
+        UserId,
+      </if>
+      <if test="loginip != null">
+        LoginIp,
+      </if>
+      <if test="logintoken != null">
+        LoginToken,
+      </if>
+      <if test="expiretime != null">
+        ExpireTime,
+      </if>
+      <if test="isvalid != null">
+        ISValid,
+      </if>
+      <if test="createtime != null">
+        CreateTime,
+      </if>
+      <if test="updatetime != null">
+        UpdateTime,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="userid != null">
+        #{userid,jdbcType=BIGINT},
+      </if>
+      <if test="loginip != null">
+        #{loginip,jdbcType=VARCHAR},
+      </if>
+      <if test="logintoken != null">
+        #{logintoken,jdbcType=VARCHAR},
+      </if>
+      <if test="expiretime != null">
+        #{expiretime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isvalid != null">
+        #{isvalid,jdbcType=BIT},
+      </if>
+      <if test="createtime != null">
+        #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatetime != null">
+        #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.github.greatwqs.app.domain.po.UserLoginHistoryPo">
+    update userlist_login_history
+    <set>
+      <if test="userid != null">
+        UserId = #{userid,jdbcType=BIGINT},
+      </if>
+      <if test="loginip != null">
+        LoginIp = #{loginip,jdbcType=VARCHAR},
+      </if>
+      <if test="logintoken != null">
+        LoginToken = #{logintoken,jdbcType=VARCHAR},
+      </if>
+      <if test="expiretime != null">
+        ExpireTime = #{expiretime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isvalid != null">
+        ISValid = #{isvalid,jdbcType=BIT},
+      </if>
+      <if test="createtime != null">
+        CreateTime = #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatetime != null">
+        UpdateTime = #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=BIGINT}
+  </update>
+
+  <update id="updateByPrimaryKey" parameterType="com.github.greatwqs.app.domain.po.UserLoginHistoryPo">
+    update userlist_login_history
+    set UserId = #{userid,jdbcType=BIGINT},
+      LoginIp = #{loginip,jdbcType=VARCHAR},
+      LoginToken = #{logintoken,jdbcType=VARCHAR},
+      ExpireTime = #{expiretime,jdbcType=TIMESTAMP},
+      ISValid = #{isvalid,jdbcType=BIT},
+      CreateTime = #{createtime,jdbcType=TIMESTAMP},
+      UpdateTime = #{updatetime,jdbcType=TIMESTAMP}
+    where ID = #{id,jdbcType=BIGINT}
+  </update>
+
+  <update id="updateIsValid">
+    update userlist_login_history
+    set    ISValid = 0, UpdateTime = NOW()
+    where  UserId = #{userId,jdbcType=BIGINT} and LoginToken = #{loginToken,jdbcType=VARCHAR} and ISValid = 1
+  </update>
+</mapper>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<!--
+spring boot application
+1. Please put mybatis-generator-plugin-1.0.jar in project home location.
+Eg: $project_home/mybatis-generator-plugin-1.0.jar
+
+2. Please put generatorConfig.xml in resource location.
+Eg: $project_home/src/main/resources/generatorConfig.xml
+
+3. Usage:
+mvn -DgTable={tablename} mybatis-generator:generate
+-->
+<generatorConfiguration>
+    <context id="DB2Tables" targetRuntime="MyBatis3">
+        <!-- mybatis-generator-plugin-1.0.jar -->
+        <plugin type="com.github.greatwqs.mybatisplugin.MyBatisLombokPlugin"/>
+
+        <commentGenerator>
+            <property name="suppressAllComments" value="true"/>
+        </commentGenerator>
+
+        <!-- ${your_project_name} -->
+        <jdbcConnection driverClass="com.mysql.cj.jdbc.Driver"
+                        connectionURL="jdbc:mysql://localhost:3306/finance-manager"
+                        userId="root"
+                        password="greatwqs">
+        </jdbcConnection>
+
+        <javaTypeResolver>
+            <property name="forceBigDecimals" value="false"/>
+        </javaTypeResolver>
+
+        <!-- generate location -->
+        <!-- 1. po location -->
+        <javaModelGenerator targetPackage="com.github.greatwqs.app.domain.po" targetProject="src/main/java">
+            <property name="enableSubPackages" value="true"/>
+            <property name="trimStrings" value="true"/>
+        </javaModelGenerator>
+
+        <!-- 2. mapper xml location-->
+        <sqlMapGenerator targetPackage="mapper" targetProject="src/main/resources">
+            <property name="enableSubPackages" value="true"/>
+        </sqlMapGenerator>
+
+        <!-- 3. mapper class location -->
+        <javaClientGenerator type="XMLMAPPER" targetPackage="com.github.greatwqs.app.mapper"
+                             targetProject="src/main/java">
+            <property name="enableSubPackages" value="true"/>
+        </javaClientGenerator>
+
+        <!-- ${your_project_name} -->
+        <table schema="finance-manager" tableName="${gTable}" enableSelectByExample="false"
+               enableDeleteByExample="false"
+               enableCountByExample="false"
+               enableUpdateByExample="false">
+            <property name="useActualColumnNames" value="false"/>
+            <!--<generatedKey column="file_id" sqlStatement="Mysql" identity="true" />-->
+        </table>
+    </context>
+</generatorConfiguration>

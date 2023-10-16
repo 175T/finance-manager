@@ -1,0 +1,59 @@
+# ncc deployment
+# https://matthewpalmer.net/kubernetes-app-developer/articles/kubernetes-apiversion-definition-guide.html
+# apiVersion: extensions/v1beta1 to apps/v1
+# https://stackoverflow.com/questions/58481850/no-matches-for-kind-deployment-in-version-extensions-v1beta1
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: springboot-demo-svc-deployment
+spec:
+  selector:
+    matchLabels:
+      app: springboot-demo-svc
+      env: nccdev
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: springboot-demo-svc
+        env: nccdev
+    spec:
+      containers:
+      - name: springboot-demo-svc
+        image: greatwqs/springboot-demo
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http-port
+          containerPort: 8080
+        env:
+        - name: spring.profiles.active
+          value: "dev"
+
+        - name: user.datasource.url
+          value: "jdbc:mysql://10.106.155.206:13306/workbox?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8&characterSetResults=utf8&useSSL=false&verifyServerCertificate=false&autoReconnct=true&autoReconnectForPools=true&allowMultiQueries=true"
+        - name: user.datasource.username
+          value: "workboxUser"
+        - name: user.datasource.password
+          value: "workboxPwd"
+
+        - name: video.datasource.url
+          value: "jdbc:mysql://10.106.155.206:13306/workbox?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8&characterSetResults=utf8&useSSL=false&verifyServerCertificate=false&autoReconnct=true&autoReconnectForPools=true&allowMultiQueries=true"
+        - name: video.datasource.username
+          value: "workboxUser"
+        - name: video.datasource.password
+          value: "workboxPwd"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: springboot-demo-svc
+spec:
+  selector:
+    app: springboot-demo-svc
+    env: nccdev
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080
+  type: LoadBalancer

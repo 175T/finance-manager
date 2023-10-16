@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.greatwqs.app.mapper.OrderlistMapper">
+  <resultMap id="BaseResultMap" type="com.github.greatwqs.app.domain.po.OrderPo">
+    <id column="ID" jdbcType="BIGINT" property="id" />
+    <result column="OrderAccount" jdbcType="VARCHAR" property="orderaccount" />
+    <result column="OrderClass" jdbcType="VARCHAR" property="orderclass" />
+    <result column="SubjectId" jdbcType="BIGINT" property="subjectid" />
+    <result column="TicketTypeId" jdbcType="BIGINT" property="tickettypeid" />
+    <result column="TicketNo" jdbcType="VARCHAR" property="ticketno" />
+    <result column="OrderPrice" jdbcType="DECIMAL" property="orderprice" />
+    <result column="PayType" jdbcType="VARCHAR" property="paytype" />
+    <result column="OrderTime" jdbcType="TIMESTAMP" property="ordertime" />
+    <result column="OrderDes" jdbcType="VARCHAR" property="orderdes" />
+    <result column="ISValid" jdbcType="BIT" property="isvalid" />
+    <result column="CreateUserId" jdbcType="BIGINT" property="createuserid" />
+    <result column="CreateTime" jdbcType="TIMESTAMP" property="createtime" />
+    <result column="UpdateUserId" jdbcType="BIGINT" property="updateuserid" />
+    <result column="UpdateTime" jdbcType="TIMESTAMP" property="updatetime" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    ID, OrderAccount, OrderClass, SubjectId, TicketTypeId, TicketNo, OrderPrice, PayType, 
+    OrderTime, OrderDes, ISValid, CreateUserId, CreateTime, UpdateUserId, UpdateTime
+  </sql>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from orderlist
+    where ID = #{id,jdbcType=BIGINT}
+  </select>
+
+  <select id="selectByOrderSearch" parameterType="com.github.greatwqs.app.domain.bo.OrderSearchBo" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from orderlist
+    where ISValid = 1
+    <if test="createTimeStart != null">
+      and OrderTime &gt;= #{createTimeStart}
+    </if>
+    <if test="createTimeEnd != null">
+      and OrderTime &lt;= #{createTimeEnd}
+    </if>
+    <if test="orderAccount != null">
+      and OrderAccount like concat('%', #{orderAccount}, '%')
+    </if>
+    <if test="ticketNo != null">
+      and TicketNo like concat('%', #{ticketNo}, '%')
+    </if>
+    <if test="payType != null">
+      and PayType like concat('%', #{payType}, '%')
+    </if>
+    <if test="orderClass != null">
+      and OrderClass like concat('%', #{orderClass}, '%')
+    </if>
+    <if test="orderDes != null">
+      and OrderDes like concat('%', #{orderDes}, '%')
+    </if>
+    <if test="subjectId != null">
+      and SubjectId = #{subjectId}
+    </if>
+    <if test="orderPriceType == 1">
+      and OrderPrice &gt;= 0
+    </if>
+    <if test="orderPriceType == 2">
+      and OrderPrice &lt;= 0
+    </if>
+    order by ID desc
+    limit #{beginIndex}, #{pageSize}
+  </select>
+
+  <select id="selectBySubjectId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from orderlist
+    where SubjectId = #{subjectId,jdbcType=BIGINT} and ISValid = 1
+    limit #{limitCount}
+  </select>
+
+  <select id="selectByTicketTypeId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from orderlist
+    where TicketTypeId = #{ticketTypeId,jdbcType=BIGINT} and ISValid = 1
+    limit #{limitCount}
+  </select>
+
+  <select id="selectCountByOrderSearch" parameterType="com.github.greatwqs.app.domain.bo.OrderSearchBo" resultType="integer">
+    select count(*)
+    from orderlist
+    where ISValid = 1
+    <if test="createTimeStart != null">
+      and OrderTime &gt;= #{createTimeStart}
+    </if>
+    <if test="createTimeEnd != null">
+      and OrderTime &lt;= #{createTimeEnd}
+    </if>
+    <if test="orderAccount != null">
+      and OrderAccount like concat('%', #{orderAccount}, '%')
+    </if>
+    <if test="ticketNo != null">
+      and TicketNo like concat('%', #{ticketNo}, '%')
+    </if>
+    <if test="payType != null">
+      and PayType like concat('%', #{payType}, '%')
+    </if>
+    <if test="orderClass != null">
+      and OrderClass like concat('%', #{orderClass}, '%')
+    </if>
+    <if test="orderDes != null">
+      and OrderDes like concat('%', #{orderDes}, '%')
+    </if>
+    <if test="subjectId != null">
+      and SubjectId = #{subjectId}
+    </if>
+    <if test="orderPriceType == 1">
+      and OrderPrice &gt;= 0
+    </if>
+    <if test="orderPriceType == 2">
+      and OrderPrice &lt;= 0
+    </if>
+  </select>
+
+  <select id="selectTotalPriceByOrderSearch" parameterType="com.github.greatwqs.app.domain.bo.OrderSearchBo" resultType="decimal">
+    select sum(OrderPrice)
+    from orderlist
+    where ISValid = 1
+    <if test="createTimeStart != null">
+      and OrderTime &gt;= #{createTimeStart}
+    </if>
+    <if test="createTimeEnd != null">
+      and OrderTime &lt;= #{createTimeEnd}
+    </if>
+    <if test="orderAccount != null">
+      and OrderAccount like concat('%', #{orderAccount}, '%')
+    </if>
+    <if test="ticketNo != null">
+      and TicketNo like concat('%', #{ticketNo}, '%')
+    </if>
+    <if test="payType != null">
+      and PayType like concat('%', #{payType}, '%')
+    </if>
+    <if test="orderClass != null">
+      and OrderClass like concat('%', #{orderClass}, '%')
+    </if>
+    <if test="orderDes != null">
+      and OrderDes like concat('%', #{orderDes}, '%')
+    </if>
+    <if test="subjectId != null">
+      and SubjectId = #{subjectId}
+    </if>
+    <if test="orderPriceType == 1">
+      and OrderPrice &gt;= 0
+    </if>
+    <if test="orderPriceType == 2">
+      and OrderPrice &lt;= 0
+    </if>
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from orderlist
+    where ID = #{id,jdbcType=BIGINT}
+  </delete>
+
+  <insert id="insert" parameterType="com.github.greatwqs.app.domain.po.OrderPo">
+    insert into orderlist (ID, OrderAccount, OrderClass, 
+      SubjectId, TicketTypeId, TicketNo, 
+      OrderPrice, PayType, OrderTime, 
+      OrderDes, ISValid, CreateUserId, 
+      CreateTime, UpdateUserId, UpdateTime
+      )
+    values (#{id,jdbcType=BIGINT}, #{orderaccount,jdbcType=VARCHAR}, #{orderclass,jdbcType=VARCHAR}, 
+      #{subjectid,jdbcType=BIGINT}, #{tickettypeid,jdbcType=BIGINT}, #{ticketno,jdbcType=VARCHAR}, 
+      #{orderprice,jdbcType=DECIMAL}, #{paytype,jdbcType=VARCHAR}, #{ordertime,jdbcType=TIMESTAMP}, 
+      #{orderdes,jdbcType=VARCHAR}, #{isvalid,jdbcType=BIT}, #{createuserid,jdbcType=BIGINT}, 
+      #{createtime,jdbcType=TIMESTAMP}, #{updateuserid,jdbcType=BIGINT}, #{updatetime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+
+  <insert id="insertSelective" parameterType="com.github.greatwqs.app.domain.po.OrderPo"
+          useGeneratedKeys="true" keyProperty="id">
+    insert into orderlist
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        ID,
+      </if>
+      <if test="orderaccount != null">
+        OrderAccount,
+      </if>
+      <if test="orderclass != null">
+        OrderClass,
+      </if>
+      <if test="subjectid != null">
+        SubjectId,
+      </if>
+      <if test="tickettypeid != null">
+        TicketTypeId,
+      </if>
+      <if test="ticketno != null">
+        TicketNo,
+      </if>
+      <if test="orderprice != null">
+        OrderPrice,
+      </if>
+      <if test="paytype != null">
+        PayType,
+      </if>
+      <if test="ordertime != null">
+        OrderTime,
+      </if>
+      <if test="orderdes != null">
+        OrderDes,
+      </if>
+      <if test="isvalid != null">
+        ISValid,
+      </if>
+      <if test="createuserid != null">
+        CreateUserId,
+      </if>
+      <if test="createtime != null">
+        CreateTime,
+      </if>
+      <if test="updateuserid != null">
+        UpdateUserId,
+      </if>
+      <if test="updatetime != null">
+        UpdateTime,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="orderaccount != null">
+        #{orderaccount,jdbcType=VARCHAR},
+      </if>
+      <if test="orderclass != null">
+        #{orderclass,jdbcType=VARCHAR},
+      </if>
+      <if test="subjectid != null">
+        #{subjectid,jdbcType=BIGINT},
+      </if>
+      <if test="tickettypeid != null">
+        #{tickettypeid,jdbcType=BIGINT},
+      </if>
+      <if test="ticketno != null">
+        #{ticketno,jdbcType=VARCHAR},
+      </if>
+      <if test="orderprice != null">
+        #{orderprice,jdbcType=DECIMAL},
+      </if>
+      <if test="paytype != null">
+        #{paytype,jdbcType=VARCHAR},
+      </if>
+      <if test="ordertime != null">
+        #{ordertime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="orderdes != null">
+        #{orderdes,jdbcType=VARCHAR},
+      </if>
+      <if test="isvalid != null">
+        #{isvalid,jdbcType=BIT},
+      </if>
+      <if test="createuserid != null">
+        #{createuserid,jdbcType=BIGINT},
+      </if>
+      <if test="createtime != null">
+        #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateuserid != null">
+        #{updateuserid,jdbcType=BIGINT},
+      </if>
+      <if test="updatetime != null">
+        #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.github.greatwqs.app.domain.po.OrderPo">
+    update orderlist
+    <set>
+      <if test="orderaccount != null">
+        OrderAccount = #{orderaccount,jdbcType=VARCHAR},
+      </if>
+      <if test="orderclass != null">
+        OrderClass = #{orderclass,jdbcType=VARCHAR},
+      </if>
+      <if test="subjectid != null">
+        SubjectId = #{subjectid,jdbcType=BIGINT},
+      </if>
+      <if test="tickettypeid != null">
+        TicketTypeId = #{tickettypeid,jdbcType=BIGINT},
+      </if>
+      <if test="ticketno != null">
+        TicketNo = #{ticketno,jdbcType=VARCHAR},
+      </if>
+      <if test="orderprice != null">
+        OrderPrice = #{orderprice,jdbcType=DECIMAL},
+      </if>
+      <if test="paytype != null">
+        PayType = #{paytype,jdbcType=VARCHAR},
+      </if>
+      <if test="ordertime != null">
+        OrderTime = #{ordertime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="orderdes != null">
+        OrderDes = #{orderdes,jdbcType=VARCHAR},
+      </if>
+      <if test="isvalid != null">
+        ISValid = #{isvalid,jdbcType=BIT},
+      </if>
+      <if test="createuserid != null">
+        CreateUserId = #{createuserid,jdbcType=BIGINT},
+      </if>
+      <if test="createtime != null">
+        CreateTime = #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateuserid != null">
+        UpdateUserId = #{updateuserid,jdbcType=BIGINT},
+      </if>
+      <if test="updatetime != null">
+        UpdateTime = #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=BIGINT}
+  </update>
+
+  <update id="updateByPrimaryKey" parameterType="com.github.greatwqs.app.domain.po.OrderPo">
+    update orderlist
+    set OrderAccount = #{orderaccount,jdbcType=VARCHAR},
+      OrderClass = #{orderclass,jdbcType=VARCHAR},
+      SubjectId = #{subjectid,jdbcType=BIGINT},
+      TicketTypeId = #{tickettypeid,jdbcType=BIGINT},
+      TicketNo = #{ticketno,jdbcType=VARCHAR},
+      OrderPrice = #{orderprice,jdbcType=DECIMAL},
+      PayType = #{paytype,jdbcType=VARCHAR},
+      OrderTime = #{ordertime,jdbcType=TIMESTAMP},
+      OrderDes = #{orderdes,jdbcType=VARCHAR},
+      ISValid = #{isvalid,jdbcType=BIT},
+      CreateUserId = #{createuserid,jdbcType=BIGINT},
+      CreateTime = #{createtime,jdbcType=TIMESTAMP},
+      UpdateUserId = #{updateuserid,jdbcType=BIGINT},
+      UpdateTime = #{updatetime,jdbcType=TIMESTAMP}
+    where ID = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

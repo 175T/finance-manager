@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Springboot整合log4j2 -->
+<!-- https://www.cnblogs.com/keeya/p/10101547.html -->
+<configuration status="WARN" monitorinterval="20">
+	<Properties>
+		<Property name="baseDir">logs</Property>
+		<Property name="logFileName">app.log</Property>
+		<Property name="errorFileName">app-error.log</Property>
+		<Property name="logPatternLayout">%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %c{1.} %M - %msg%n%xEx{full}</Property>
+	</Properties>
+
+	<appenders>
+		<Console name="CONSOLE" target="SYSTEM_OUT">
+			<ThresholdFilter level="trace" onMatch="ACCEPT" onMismatch="DENY"/>
+			<PatternLayout pattern="${logPatternLayout}"/>
+		</Console>
+
+		<RollingFile name="LOG" fileName="${baseDir}/${logFileName}"
+					 filePattern="${baseDir}/${logFileName}.%d{yyyyMMdd}.%i">
+			<PatternLayout pattern="${logPatternLayout}"/>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="200 MB"/>
+				<TimeBasedTriggeringPolicy modulate="true" interval="1"/>
+			</Policies>
+			<DefaultRolloverStrategy max="50">
+				<Delete basePath="${baseDir}">
+					<IfFileName glob="${logFileName}.*"/>
+					<IfAccumulatedFileCount exceeds="50"/>
+				</Delete>
+			</DefaultRolloverStrategy>
+		</RollingFile>
+
+		<RollingFile name="ERROR" fileName="${baseDir}/${errorFileName}"
+					 filePattern="${baseDir}/${errorFileName}.%d{yyyyMMdd}.%i">
+			<ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
+			<PatternLayout pattern="${logPatternLayout}"/>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="200 MB"/>
+				<TimeBasedTriggeringPolicy modulate="true" interval="1"/>
+			</Policies>
+			<DefaultRolloverStrategy max="50">
+				<Delete basePath="${baseDir}">
+					<IfFileName glob="${errorFileName}.*"/>
+					<IfAccumulatedFileCount exceeds="50"/>
+				</Delete>
+			</DefaultRolloverStrategy>
+		</RollingFile>
+	</appenders>
+
+	<loggers>
+		<root level="INFO">
+			<appender-ref ref="LOG" level="DEBUG"/>
+			<appender-ref ref="CONSOLE" level="DEBUG"/>
+			<appender-ref ref="ERROR" level="ERROR"/>
+		</root>
+
+		<logger name="com.github.greatwqs.app" level="DEBUG" additivity="false">
+			<appender-ref ref="LOG" level="DEBUG"/>
+			<appender-ref ref="ERROR" level="ERROR"/>
+			<appender-ref ref="CONSOLE" level="DEBUG"/>
+		</logger>
+
+		<logger name="jdbc.sqlonly" level="ERROR"/>
+		<logger name="jdbc.sqltiming" level="INFO"/>
+		<logger name="jdbc.audit" level="ERROR"/>
+		<logger name="jdbc.resultset" level="ERROR"/>
+		<logger name="jdbc.resultsettable" level="INFO"/>
+		<logger name="jdbc.connection" level="ERROR"/>
+	</loggers>
+</configuration>
